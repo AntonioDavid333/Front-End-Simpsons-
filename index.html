@@ -4,8 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simpsons</title>
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/simpsonfont');
+        body{
+            font-family: 'Simpsonfont', sans-serif;
+            /* font-family: 'Akbar', sans-serif; */
+                                                
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            width: 100vw;
+            background: linear-gradient(180deg, rgb(98, 197, 255), rgb(77, 175, 255));
+        }
+        header{
+            text-align: center;
+        }
+        header img{
+            max-width: 40vw;
+        }
+        #card-container{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            text-align: center;
+        }
+        .card{
+            margin: 1em;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            min-width: 20%;
+            border: black solid;
+
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/The_Simpsons_yellow_logo.svg">
+    </header>
+    
     <form id="form" novalidate>
         <label for="cat">Categoría:</label>
         <select id="cat" defaultValue="characters">
@@ -32,6 +70,51 @@
         document.getElementById("form").addEventListener("submit",fetchData)
     })
 
+    let renderAllData=(cat,data)=>{
+        let div=document.getElementById("card-container")
+        div.innerHTML=''
+        
+
+        data.forEach(item => {
+            let card=document.createElement("div")
+            card.classList.add('card')
+             switch(cat){
+                case 'characters':
+                    card.innerHTML=`
+                    <img src="https://cdn.thesimpsonsapi.com/200${item.portrait_path}"
+                    <h3>${item.name}</h3>
+                    <p>
+                    <span>Edad: <b>${item.age}</b></span>
+                    <span>Edad: <b>${item.gender}</b></span>
+                    </p>
+                    `
+                    break;
+                case 'episodes':
+                    card.innerHTML=`
+                    <img src="https://cdn.thesimpsonsapi.com/200${item.image_path}"
+                    <h3>${item.name}</h3>
+                    
+                    <span>Temporada: <b>${item.season}</b></span>
+                    <span>Episodio: <b>${item.episode_number}</b></span>
+                    </p>
+                    `
+                    break;
+                case 'locations':
+                    card.innerHTML=`
+                    <img src="https://cdn.thesimpsonsapi.com/200${item.image_path}"
+                    <h3>${item.name}</h3>
+                    <p>
+                    <span>Ciudad: <b>${item.town}</b></span>
+                    </p>
+                    `
+                    
+                    break
+            }
+            div.appendChild(card)
+            
+        });
+    }
+
     let fetchAllData= async(cat)=>{
         let items=[]
         console.log('todos los datos')
@@ -42,6 +125,7 @@
             if(!res.ok){
                 throw `Error ${res.status} de la API: ${response.statusText}`
             }
+            
             console.log(data)
             items.push(...data.results)
             let paginas=data.pages
@@ -54,6 +138,7 @@
                 items.push(...data.results)
             }
             console.log(items)
+            renderAllData(cat,items)
 
         }catch(e){
             console.error(e)
