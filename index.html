@@ -20,7 +20,7 @@
             text-align: center;
         }
         header img{
-            max-width: 40vw;
+            max-height: 10vw;
         }
         #card-container{
             display: flex;
@@ -30,12 +30,57 @@
         }
         .card{
             margin: 1em;
+           
+            display: flex;
+            flex-direction: column;
+            min-width: 15%;
+            
+            border-radius: 15px;
+            position: relative;
+
+        }
+        .contenido{
+            
             background-color: white;
             display: flex;
             flex-direction: column;
-            min-width: 20%;
+            width: 100%;
             border: black solid;
+            border-radius: 15px;
+            
+           
 
+        }
+        form{
+            margin: auto;
+            width: 40%;
+            border: solid;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+        }
+        .card:hover .contenido{
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.123),white);
+            transform: perspective(200px) rotateX(5deg) scale(0.9);
+            box-shadow: 5px 5px 5px rgb(42, 76, 128);
+        }
+        .card:hover .contenido>img{
+            opacity: 30%;
+            filter: contrast(0) hue-rotate(90deg) ;
+        }
+        .card:hover .saliente{
+            transform: translateY(-50px) translate(-50%, -50%) scale(1.8);
+            filter: drop-shadow(20px 20px 30px rgb(77, 175, 255));
+            opacity: 100%;
+        }
+        .saliente{
+            position: absolute;
+            opacity: 0%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1.2);
+            transition:  transform 0.2s ease-out, opacity 0.2s ease-out 0.1s, filter 1s ease-out;
         }
     </style>
 </head>
@@ -45,12 +90,14 @@
     </header>
     
     <form id="form" novalidate>
-        <label for="cat">Categoría:</label>
-        <select id="cat" defaultValue="characters">
-            <option value="characters">Personajes</option>
-            <option value="episodes">Episodios</option>
-            <option value="locations">Lugares</option>
-        </select>
+        <div>
+            <label for="cat">Categoría:</label>
+            <select id="cat" defaultValue="characters">
+                <option value="characters">Personajes</option>
+                <option value="episodes">Episodios</option>
+                <option value="locations">Lugares</option>
+            </select>
+        </div>
 
         <label for="id">Identificador:</label>
         <input type="number" pattern="^\d{1,3}$" placeholder="ej.5(Maggie)" id="id">
@@ -81,12 +128,15 @@
              switch(cat){
                 case 'characters':
                     card.innerHTML=`
-                    <img src="https://cdn.thesimpsonsapi.com/200${item.portrait_path}"
-                    <h3>${item.name}</h3>
-                    <p>
-                    <span>Edad: <b>${item.age}</b></span>
-                    <span>Edad: <b>${item.gender}</b></span>
-                    </p>
+                    <div class="contenido">
+                        <img src="https://cdn.thesimpsonsapi.com/200${item.portrait_path}">
+                        <h3>${item.name}</h3>
+                        <p>
+                        <span>Edad: <b>${item.age}</b></span>
+                        <span>Edad: <b>${item.gender}</b></span>
+                        </p>
+                    </div>
+                    <img class="saliente" src="https://cdn.thesimpsonsapi.com/200${item.portrait_path}">
                     `
                     break;
                 case 'episodes':
