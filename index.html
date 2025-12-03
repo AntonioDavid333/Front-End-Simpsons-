@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simpsons</title>
+</head>
+<body>
+    <form id="form" novalidate>
+        <label for="cat">Categoría:</label>
+        <select id="cat" defaultValue="characters">
+            <option value="characters">Personajes</option>
+            <option value="episodes">Episodios</option>
+            <option value="locations">Lugares</option>
+        </select>
+
+        <label for="id">Identificador:</label>
+        <input type="number" pattern="^\d{1,3}$" placeholder="ej.5(Maggie)" id="id">
+
+        <button type="submit" id="boton">Buscar</button>
+
+    </form>
+    <div id="card-container"></div>
+    
+</body>
+<script>
+    /*  https://thesimpsonsapi.com/api
+    *   https://thesimpsonsapi.com/api/characters/1
+
+    */
+    window.addEventListener('load', function(){
+        document.getElementById("form").addEventListener("submit",fetchData)
+    })
+
+    let fetchAllData= async(cat)=>{
+        let items=[]
+        console.log('todos los datos')
+        let url=`https://thesimpsonsapi.com/api/${cat}`
+        try{
+            let res=await fetch(url)
+            let data=await res.json()
+            if(!res.ok){
+                throw `Error ${res.status} de la API: ${response.statusText}`
+            }
+            console.log(data)
+            items.push(...data.results)
+            let paginas=data.pages
+            for(let page=2;page<=paginas;page++){
+                let res=await fetch(`${url}?page=${page}`)
+                let data=await res.json()
+                if(!res.ok){
+                    throw `Error ${res.status} de la API: ${response.statusText}`
+                }
+                items.push(...data.results)
+            }
+            console.log(items)
+
+        }catch(e){
+            console.error(e)
+        }
+
+    }
+
+    let renderIdData=(cat,data)=>{
+        let div=document.getElementById("card-container")
+        div.innerHTML=''
+        let card=document.createElement("div")
+        card.classList.add('card')
+
+        switch(cat){
+            case 'characters':
+                card.innerHTML=`
+                <img src="https://cdn.thesimpsonsapi.com/200${data.portrait_path}"
+                <h3>${data.name}</h3>
+                <p>${data.description}</p>
+                <span>Edad: <b>${data.age}</b></span>
+                <span>Edad: <b>${data.gender}</b></span>
+                `
+                break;
+            case 'episodes':
+                card.innerHTML=`
+                <img src="https://cdn.thesimpsonsapi.com/200${data.image_path}"
+                <h3>${data.name}</h3>
+                <p>${data.description}</p>
+                <span>Temporada: <b>${data.season}</b></span>
+                <span>Episodio: <b>${data.episode_number}</b></span>
+                `
+                break;
+            case 'locations':
+                card.innerHTML=`
+                <img src="https://cdn.thesimpsonsapi.com/200${data.image_path}"
+                <h3>${data.name}</h3>
+                <p>${data.description}</p>
+                <span>Ciudad: <b>${data.town}</b></span>
+                `
+                
+                break
+        }
+        div.appendChild(card)
+    }
+
+    let fetchIdData=async(cat,id)=>{
+        console.log('datos por ID')
+         let url=`https://thesimpsonsapi.com/api/${cat}/${id}`
+        try{
+            let res=await fetch(url)
+            let data=await res.json()
+            if(!res.ok){
+                throw `Error ${res.status} de la API: ${response.statusText}`
+            }
+            console.log(data)
+            renderIdData(cat,data)
+        }catch(e){
+            console.error(e)
+        }
+
+    }
+
+    function fetchData(e){
+        e.preventDefault();
+        console.log("dentro")
+
+        let cat=document.getElementById("cat").value 
+        let id=document.getElementById("id").value.trim()
+
+
+        id===''?fetchAllData(cat):fetchIdData(cat,id)
+    }
+</script>
+</html>
